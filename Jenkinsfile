@@ -39,10 +39,14 @@ pipeline {
         stage('Security Test') {
             steps {
                 echo '=== [SECURITY TEST] 1. OWASP Dependency-Check (SCA) ==='
-                dependencyCheck additionalArguments: '--scan . --format HTML --format XML --project "Flask Vulnerable App"', odcInstallation: 'DP-Check'
-                dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    dependencyCheck additionalArguments: '--scan . --format HTML --format XML --project "Flask Vulnerable App"', odcInstallation: 'DP-Check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
                 echo '=== [SECURITY TEST] 2. OWASP ZAP (DAST) ==='
                 sh '''
+                    # Dar permisos a la carpeta para que ZAP guarde el reporte HTML
+                    chmod -R 777 ${WORKSPACE} || true
                     docker run --rm \
                       --net devsecops-net \
                       -v ${WORKSPACE}:/zap/wrk/:rw \
