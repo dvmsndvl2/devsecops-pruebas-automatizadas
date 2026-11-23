@@ -7,7 +7,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== [BUILD] Instalando dependencias del proyecto ==='
-                sh 'pip install --no-cache-dir -r requirements.txt --break-system-packages || pip install -r requirements.txt'
+                sh 'pip install --no-cache-dir -r requirements.txt --break-system-packages || pip3 install -r requirements.txt --break-system-packages || true'
             }
         }
         stage('Test') {
@@ -46,7 +46,8 @@ pipeline {
                     docker run --rm \
                       --net devsecops-net \
                       -v ${WORKSPACE}:/zap/wrk/:rw \
-                      zaproxy/zap-baseline.py \
+                      zaproxy/zap-stable \
+                      zap-baseline.py \
                       -t http://vulnerable-flask-app:5000/hello?name=Test \
                       -r zap_report.html || true
                 '''
