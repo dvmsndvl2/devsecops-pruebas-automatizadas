@@ -7,7 +7,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo '=== [BUILD] Instalando dependencias del proyecto ==='
-                sh 'pip install --no-cache-dir -r requirements.txt --break-system-packages || pip3 install -r requirements.txt --break-system-packages || true'
+                sh 'pip install --no-cache-dir --ignore-installed -r requirements.txt --break-system-packages || true'
             }
         }
         stage('Test') {
